@@ -22,30 +22,27 @@ int max = 1000;
  int iter_a = 0;
  int iter_b = 0;
 
-while(randomNumber != x) {
+ while(randomNumber != x) {
  randomNumber = min + std::rand() % (max - min);
  iter_a++;
-}
+ }
 
- while(randomNumber2 != x) {
+ while(true) {
   randomNumber2 = min + std::rand() % (max - min);
   iter_b++;
-  generatedNumbers.insert(randomNumber2);
 
 
-
-
-  if (generatedNumbers.count(randomNumber)) {
+  if (generatedNumbers.count(randomNumber2)) {
    std::cout << "Kollision:" << randomNumber  << std::endl;
    break;
   }
-
-
+  generatedNumbers.insert(randomNumber2);
  }
 
-std::cout << "Zufallszahl:" << randomNumber << std::endl;
+ std::cout << "Zufallszahl:" << randomNumber << std::endl;
  std::cout << "Iterationen:" << iter_a << std::endl;
-  std::cout << "Iterationen bis Kollision:" << iter_b << std::endl;
+ std::cout << "Zufallszahl 2:" << randomNumber2 << std::endl;
+ std::cout << "Iterationen bis Kollision:" << iter_b << std::endl;
  std::cout << "alle generierten Numbers:\n";
  for (const int& value : generatedNumbers) {
   std::cout << value << " ";
