@@ -1,0 +1,85 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.28"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "Uebung_1",
+					"jsonFile" : "directory-Uebung_1-Debug-7763138504a218786383.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.28"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Uebung_1",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "SecurityEngineering",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "aufgabe_1::@61b2ef47cfec38fad05a",
+					"jsonFile" : "target-aufgabe_1-Debug-8b7f280711d930d56f75.json",
+					"name" : "aufgabe_1",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "aufgabe_3::@61b2ef47cfec38fad05a",
+					"jsonFile" : "target-aufgabe_3-Debug-aefded8d9a57eb09e06d.json",
+					"name" : "aufgabe_3",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/PC/Projekte/Security-Engineering/cmake-build-debug",
+		"source" : "C:/Users/PC/Projekte/Security-Engineering"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}
