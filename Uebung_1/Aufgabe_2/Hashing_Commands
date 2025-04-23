@@ -1,0 +1,35 @@
+Es gibt eine Datei etc/services.
+Die Datei enthält Informationen über Netzwerkdienste und Protokolle.
+
+Kopieren von diese Datei zum Home-Verzeichnis erfolgt durch:
+    cp /etc/services ~/services
+
+Hashwerte der Orignaldatei kann bestimmt werden durch:
+    i) sha256sum ~/services         --> 256 bits = 64 chars in total = strong, fast, secure
+    ii) sha1sum ~/services          --> 160 bits = 40 chars in total = fast, prone to collisions tho
+    iii) sha384sum ~/services       --> 384 bits = 96 chars in total = slow, very strong and secure
+    iv) md5sum ~/services           --> 128 bits = 32 chars in total = too prone to collisions
+
+Hashwerte durch OPENSSL:
+    i) openssl dgst -sha256 ~/services
+    ii) openssl dgst -sha1 ~/services
+    iii) openssl dgst -sha384 ~/services
+    iv) openssl dgst -md5 ~/services
+
+    !! OPENSSL is a software library and command line tool. DGST stands for digest(hashing)!!
+
+    Wenn wir eine kleine Änderung in der Datei machen, ändert sich der kompletten Hashcode.
+
+    "nano/vim ~/services"
+
+    Wenn wir jetzt nochmal die Hashfunktionen auf die Datei anwenden, sehen wir
+    , dass die komplette Hashwerte sich geändert haben.
+
+Andere Hashfunktionen:
+    i) openssl dgst -sha3-256 ~/services    --> 256 bits = different algorithm = part of SHA-3 Family
+    ii) openssl dgst -sha512 ~/services     --> 512 bits = VERY SECURE = slower tho
+    iii) openssl dgst -whirlpool ~/services --> 512-bit cryptographic hashfunction = doesnt belong to the SHA-Family
+    iv) openssl dgst -ripemd160 ~/services  --> 160-bit = Used as a alternative to SHA/MD in the 90s. Still good but getting old.
+
+To see which hashfunctions are supported we use:
+    openssl list -digest-commands | grep "name"
