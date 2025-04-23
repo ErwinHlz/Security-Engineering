@@ -1,0 +1,22 @@
+Wir gehen davon aus, dass die englische Sprache ungefähr 70.000-100.000 unique Wörter enthält.
+Somit können wir die Entropy der Sprache ausrechnen, das wäre dann:
+
+    log_2(100.000) = 16,6777 = 16 (best case)
+
+Mittels Entropie(Bits) können wir die mögliche Kombinationen eines Passwortes bestimmen.
+
+Warum gibt es 28 Bits Entropie im XKCD Comics?
+    Es gibt:
+
+        16 bits Entropie
+        4 bits Sonderzeichen
+        3 bits Ersetzungen
+        3 bits Zahlen           (2³=wir cheaten hier normalerweise soll das 10 sein)
+        1 bit Ersetzung
+        1 bit Reihenfolge von Zeichen und Zahlen
+
+Wenn wir ein Dictionary mit n Wörtern haben, ist die Entropie:
+        log_2(n).
+
+Anzahl unique Wörter in einem deutschen Dictionary: ungefähr 80.000
+Anzahl unique Wörte in einem englischen Dictionary: ungefähr 100.000
