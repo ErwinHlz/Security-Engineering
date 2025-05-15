@@ -1,0 +1,1 @@
+add_executable(aufgabe_3 Aufgabe_3/aufgabe_3.c)

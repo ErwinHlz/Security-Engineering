@@ -11,5 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Füge Unterordner (Uebung_1) hinzu
 add_subdirectory(Uebung_1)
 
+add_subdirectory(Uebung_2)
+
 
 
