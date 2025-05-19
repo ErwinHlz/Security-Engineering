@@ -16,14 +16,14 @@ void printTime(time_t t) {
 
 // Bestimmt den Dateityp aus dem Modusfeld (fileStat.st_mode)
 const char* getFileType(struct stat fileStat) {
-    switch (fileStat.st_mode & S_IFMT) {
+    switch (fileStat.st_mode & S_IFMT ) {
         case S_IFREG: return "Reguläre Datei";       // Diese sind alle in der Datei /usr/include/bits/stat.h definiert
         case S_IFDIR: return "Verzeichnis";
         case S_IFLNK: return "Symbolischer Link";
         case S_IFCHR: return "Character Device";
         case S_IFBLK: return "Block Device";
         case S_IFIFO: return "Pipe/FIFO";
-        case S_IFSOCK: return "Socket";
+        case S_IFSOCK: return "socket";
         default: return "Unbekannt";
     }
 }
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
       printf("\n");
 
     // Versuche, Informationen zur Datei zu lesen
-    if (stat(filePath, &fileStat) == -1) {
+    if (lstat(filePath, &fileStat) == -1) {
         perror("Fehler beim Lesen der Datei");
         continue;
     } else {

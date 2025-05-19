@@ -1,0 +1,99 @@
+==== Datei: /dev/random ====
+
+Datei wurde erfolgreich gefunden!
+
+Benutzername: root
+Dateigröße: 0 Bytes
+User-ID: 0
+Gruppen-ID: 0
+Dateityp: Character Device
+Zugriffsrechte (Oktal): 0666
+Letzter Zugriff: Mon May 19 19:54:47 2025
+Letzte Änderung (Inhalt): Mon May 19 19:54:47 2025
+Letzte Änderung (Metadaten/Inode): Mon May 19 19:54:47 2025
+----------------------------------------------
+
+==== Datei: /bin/sh ====
+
+Datei wurde erfolgreich gefunden!
+
+Benutzername: root
+Dateigröße: 129784 Bytes
+User-ID: 0
+Gruppen-ID: 0
+Dateityp: Reguläre Datei
+Zugriffsrechte (Oktal): 0755
+Letzter Zugriff: Mon May 19 19:54:47 2025
+Letzte Änderung (Inhalt): Sun Mar 31 10:47:26 2024
+Letzte Änderung (Metadaten/Inode): Tue Apr 15 17:16:57 2025
+----------------------------------------------
+
+==== Datei: /usr/bin/tar ====
+
+Datei wurde erfolgreich gefunden!
+
+Benutzername: root
+Dateigröße: 432048 Bytes
+User-ID: 0
+Gruppen-ID: 0
+Dateityp: Reguläre Datei
+Zugriffsrechte (Oktal): 0755
+Letzter Zugriff: Mon May 19 19:54:47 2025
+Letzte Änderung (Inhalt): Mon Apr  8 18:20:47 2024
+Letzte Änderung (Metadaten/Inode): Tue Apr 15 17:16:57 2025
+----------------------------------------------
+
+==== Datei: /var/spool ====
+
+Datei wurde erfolgreich gefunden!
+
+Benutzername: root
+Dateigröße: 4096 Bytes
+User-ID: 0
+Gruppen-ID: 0
+Dateityp: Verzeichnis
+Zugriffsrechte (Oktal): 0755
+Letzter Zugriff: Mon May 19 20:06:34 2025
+Letzte Änderung (Inhalt): Sat Feb 15 09:09:38 2025
+Letzte Änderung (Metadaten/Inode): Tue Apr 15 17:17:01 2025
+----------------------------------------------
+
+==== Datei: /etc/services ====
+
+Datei wurde erfolgreich gefunden!
+
+Benutzername: root
+Dateigröße: 12813 Bytes
+User-ID: 0
+Gruppen-ID: 0
+Dateityp: Reguläre Datei
+Zugriffsrechte (Oktal): 0644
+Letzter Zugriff: Mon May 19 19:55:27 2025
+Letzte Änderung (Inhalt): Sat Mar 27 23:32:57 2021
+Letzte Änderung (Metadaten/Inode): Tue Apr 15 17:16:57 2025
+----------------------------------------------
+
+==== Datei: /tmp/.X11-unix/X0 ====
+
+Datei wurde erfolgreich gefunden!
+
+Benutzername: erwin
+Dateigröße: 0 Bytes
+User-ID: 1000
+Gruppen-ID: 1000
+Dateityp: Socket
+Zugriffsrechte (Oktal): 0777
+Letzter Zugriff: Mon May 19 19:54:47 2025
+Letzte Änderung (Inhalt): Mon May 19 19:54:47 2025
+Letzte Änderung (Metadaten/Inode): Mon May 19 19:54:47 2025
+----------------------------------------------
+
+
+file kommando:
+/dev/random:       character special (1/8)
+/bin/sh:           symbolic link to dash
+/usr/bin/tar:      ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=b215a0463ea0544382954531f8291bcb577b97aa, for GNU/Linux 3.2.0, stripped
+/var/spool:        directory
+/etc/services:     ASCII text
+/tmp/.X11-unix/X0: socket
+
