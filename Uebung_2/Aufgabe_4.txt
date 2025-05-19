@@ -1,0 +1,27 @@
+openssl dgst -sha256 -mac HMAC -macopt \
+hexkey:0123456789abcdef8877665544332211 /etc/services
+
+Dieser Befehl macht einen Hash mit openssl durch. "dgst" steht für Digest-Operation in hexadezimal.
+"-sha256" bestimmt den Hash-Algorithmus SHA25. also einen 256bit Hashwert, die ausgabe sind aber 64 Hexzahlen.
+"-mac" steht für Message Authentication Code und gibt Eindeutigkeit über den Ursprung von Daten oder Nachrichten.
+"-macopt hexkey:..." gibt den jeweiligen geheime schlüssel. mit deisem key kann man die datei auf ihren Ursprung überprüfen.
+also wenn man diesen algorithmus und diesen mac code verwendet bekommt man einen eindeutigen hashwert für die Datei, falls diese
+Datei nicht verändert wurde. Falls dieser code verändert wird, bekommt man einen neuen Hashwert
+
+openssl dgst -sha256 -mac HMAC -macopt hexkey:0123456789abcdef8877665544332211 /etc/services
+HMAC-SHA2-256(/etc/services)= b720658651b2829446e7e1d69987cd2dfe02fd4249cb62175f0e80308995a2bb
+
+od -t x4 /dev/urandom | head -1 | cut -c 17- | sed -e "s/ //g"
+
+"od" : gibt die Datei in oktal-format aus
+"-t" : steht für Type, also welches type format
+"x4" : x für hexadezimal und 4 für Bytes also 4 Bytes = 4 * 8 Bits = 32 bit; alternativ nur -x
+"/dev/urandom": erstellt unendlich Zufallszahlen
+"head -1": es wird nur die erste zeile ausgegeben
+"cut -c 17-": entfernt 17 Zeilen am anfang der ausgabe
+"sed -e "s/ //g": entfernt Leerzeichen. sed ist ein tool zur textbearbeitung. -e ist eine ergänzung
+                  bzw. ein befehlt für sed. "s steht für ersetzen". "/ //" ersetzt Leerzeichen durch nichts.
+                  "g" steht für global. also führt es für die komplette ausgabe aus.
+
+in meiner distribution (Ubuntu) gibt cut -c 17- genau 24 Hexzahlen aus, also 24 * 4 = 96 bits. wir wollen
+128 bits also brauchen wir 128/4= 32 Hexzahlen. 32-24 = 8, 17 - 8 = 9. D.h mit "vut -c 9-" bekomme ich 128bit.

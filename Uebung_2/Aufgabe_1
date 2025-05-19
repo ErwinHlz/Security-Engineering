@@ -48,3 +48,5 @@ Also wird Testlink im Archiv nur als Verweis auf testfile gespeichert.
 ii) ZIP: zip erkennt keine Hardlinks, deswegen behandelt er testfile und testlink als zwei verschiedene Dateien.
 Deshalt werden die Dateien zweimal gespeichert.
 
+
+
