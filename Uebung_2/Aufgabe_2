@@ -1,0 +1,61 @@
+Aufgabe 2:
+
+1) rm:
+    a) removes files and directories
+    b) /usr/bin/rm
+    c) rm filename
+    d) unlink()
+
+2) mv:
+    a) move (rename) files
+    b) /usr/bin/mv
+    c) mv file1.txt file2.txt
+    d) rename()
+
+3) chmod:
+    a) change file mods bits
+    b) /usr/bin/chmod
+    c) chmod 755 file.text          //[user, group, others] --> [ 4 for read, 2 for write, 1 for execute, 0 for no permission]
+    d) chmod()
+
+4) chown:
+    a) change file owner and group
+    b) /usr/bin/chown
+    c) chown root /u --> change the owner of /u to root
+    d) chown()
+
+5) mkdir:
+    a) make directories
+    b) /usr/bin/mkdir
+    c) mkdir Foldername
+    d) mkdir()
+
+6) rmdir:
+    a) remove empty directories
+    b) /usr/bin/rmdir
+    c) rmdir Foldername
+    d) rmdir()
+
+7) kill:
+    a) send a signal to a process to terminate
+    b) /usr/bin/kill
+    c) kill -9 <PID>
+    d) kill()
+
+8) ln:
+    a) makes links between files
+    b) /usr/bin/ln
+    c) ln filename1 filename2
+    d) link(), symlink()
+
+9) sleep:
+    a) delay for a specified amount of time
+    b) /usr/bin/sleep
+    c) sleep 5
+    d) nanosleep(), clock_nanosleep()
+
+10) wget:
+    a) a network downloader for downloading directly from websites
+    b) /usr/bin/wget
+    c) wget <URL>
+    d) socket(), connect(), recvfrom()
