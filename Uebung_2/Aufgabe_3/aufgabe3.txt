@@ -21,7 +21,7 @@ Benutzername: root
 Dateigröße: 129784 Bytes
 User-ID: 0
 Gruppen-ID: 0
-Dateityp: Reguläre Datei
+Dateityp: Reguläre Datei / Symbolischer Link
 Zugriffsrechte (Oktal): 0755
 Letzter Zugriff: Mon May 19 19:54:47 2025
 Letzte Änderung (Inhalt): Sun Mar 31 10:47:26 2024
@@ -97,3 +97,6 @@ file kommando:
 /etc/services:     ASCII text
 /tmp/.X11-unix/X0: socket
 
+
+lstat() ist ähnlich stat(), nur dass falls Pfadname ein symbolischer Link  ist,  Informationen  zum  Link
+       zurückgegeben werden und nicht zur Datei, auf die der Link zeigt.
