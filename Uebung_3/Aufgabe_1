@@ -16,7 +16,21 @@ Die Optionen sind:
 
 Erreichbare Servers:
 1) Hiz Saarland: 3 (ntpdate -q ntp{1,2,3}.hiz-saarland.de
-2) Physikalisch-Technisch Bundesanstalt: 4 (ntpdate -q ptbtime{1,2,3,4}.ptb.de
+2) Physikalisch-Technisch Bundesanstalt: 4 (ntpdate -q ptbtime{1,2,3,4}.ptb.de)
 
+Die 10 weitere erreichbare Servers sind auf der Webseite "ntppool.org" zu finden.
 
+Frage:  "ntpdate -q ptbtime1.ptb.de erklären."
+
+Befehl gibt die folgende Antworten raus:
+server 192.53.103.108, stratum 1, offset +0.002894, delay 0.04008
+2 Jun 04:07:54 ntpdate[116899]: adjust time server 192.53.103.108 offset +0.002894 sec
+
+Server: 192.53.103.108. A Stratum 1 NTP Server, also Stratum 1 ist immer direkt zu einer Referenzuhr verbunden(bestmögliche Zeit). Es gibt Stratum 1 bis 16. 1 steht für sehr gut und 16 ist komplett whack, fehler usw.
+
+Offset: Unsere Systemuhrzeit war so viele Sekunden falsch
+
+Delay: Zeit von und bis zum Server.
+
+Fun Fact: Es gibt noch Stratum 0. Die sind wie Atomclocks und sagen die absolut richtige Zeit.
 
