@@ -1,0 +1,22 @@
+NTP(Network Time Protocol) = Das Protokoll funktioniert als Zeitstempel und synchronisiert Uhrzeiten von verschiedener Systeme.
+Der Befehl "ntpdate" stellt das Lokale Datum und die Uhrzeit ein, indem er die als Serverargumente angegebenen NTP-Server abfragt,
+um die korrekte Zeit zu ermitteln.
+(Also Ziel ist es, die Systemzeit von einem Computer mit der Uhrzeit eines(oder ggf. mehrerer) NTP-Server abzugleichen.
+
+Man kann die Manpage von "ntpdate" nur sehen, wenn es auf unseren Rechner installiert ist.
+Um das Kommando zu installieren benutzen wir "sudo apt ntpdate"
+
+!Wichtig ist, dass wir den Befehl mit Root-Rechten ausführen. Das machen wir, weil nur Root die Systemuhr eines Linux-Systems ändern darf.
+Es gibt zwei Optionen, die verhindern, dass
+            die Systemzeit verändert wird UND
+            ntpdate Debug-Ausgaben der Kommunikation mit dem NTP-Server liefert.
+Die Optionen sind:
+    (i) -q --> Query mode: Doesnt Set the clock.
+    (ii) -d --> Debugging mode, inwhich ntpdate will go through all the steps. Information useful for general debugging will also be printed.
+
+Erreichbare Servers:
+1) Hiz Saarland: 3 (ntpdate -q ntp{1,2,3}.hiz-saarland.de
+2) Physikalisch-Technisch Bundesanstalt: 4 (ntpdate -q ptbtime{1,2,3,4}.ptb.de
+
+
+
