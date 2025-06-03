@@ -14,3 +14,5 @@ echo -e "\n"
 
 # formatierte liste erstellen mit fgrep und sed
 fgrep '<tr data-key=' fussball-tabelle.html | sed -E 's/.*ranking-number">([0-9]+).* ([A-Z][a-zA-Z]*\.*[0-9]* [a-zA-Z0-9]*[A-Z][a-z]*|.*> [A-Z][a-z]*).*/\1. \2/g' | sed 's/mr10"><\/span> //g' > formatierteTabelle.txt
+
+cat formatierteTabelle.txt
