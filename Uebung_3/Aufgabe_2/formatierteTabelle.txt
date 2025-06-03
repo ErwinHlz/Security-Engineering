@@ -1,0 +1,18 @@
+1. Bayern
+2. Leverkusen
+3. Frankfurt
+4. Freiburg
+5. Dortmund
+6. RB Leipzig
+7. Mainz
+8. Bremen
+9. Borussia Moenchengladbach
+10. Stuttgart
+11. Augsburg
+12. Wolfsburg
+13. Union Berlin
+14. St. Pauli
+15. Hoffenheim
+16. Heidenheim
+17. Holstein Kiel
+18. VfL Bochum
