@@ -1,0 +1,116 @@
+Shell-Skrpting:
+
+Aufgabe a:
+#!/bin/sh                                                       //Müssen Terminal sagen, welches Shell wir benutzen.
+if [ "$#" -eq 0 ]; then                                           // $# gibt die Anzahl der Argumente wieder zurück. 
+        echo "Fehler: Bitte mindestens ein Argument eingeben"     // Bei dieser If Bedingung überprüfen wir, ob ein Argument übergegeben wird.
+        exit 1
+fi      
+
+for name in "$@"; do                                              // $@ gsteht für alle Argumente.
+        echo "Hallo $name"                                        // Hier gehen mithilfe von der for Schleife alle übergegebene Argumente durch
+done    
+
+exit 0
+
+
+
+
+Aufgabe b:
+
+#!/bin/sh
+if [ "$#" -eq 0 ]; then                                         //  Falls kein Argument gegeben ist
+        echo "Fehler: Bitte geben Sie nur eine Datei ein: "
+        exit 1
+
+elif [ "$#" -gt 1 ]; then                                       // Falls mehrere Argumente gegeben sind
+        echo "Fehler: Mehrere Dateien sind nicht erlaubt. Bitte geben Sie nur eine Datei ein:"
+        exit 1
+fi
+
+filename="$1"                                                   //Hier wird das erste Argument gespeichert
+
+if [ ! -r "$filename" ]; then                                   // ! = negation, -r für file exists und is readable
+        echo "Fehler: "$filename"  existiert nicht"             //Hier wird geprüft, ob die Datei wirklich existiert
+        exit 1
+fi
+
+filetype="$(file "$filename")"                                  //filetype speichert String Information über filename
+
+if echo "$filetype" | grep -q "text"; then                      // falls filetype .txt hat, dann ist es eine Textdatei
+        echo "$filename ist eine Textdatei"
+        less "$filename"
+
+elif echo "$filetype" | grep -q "OpenDocument"; then            
+        echo "$filename ist eine OpenDocument-Datei"
+        libreoffice "$filename"
+
+elif echo "$filetype" | grep -q "executable"; then
+        echo "$filename ist eine ausführbare Datei"
+        sh "$filename"
+
+elif echo "$filetype" | grep -q "image"; then
+        echo "$filename ist eine Bilddatei"
+        eog "$filename"
+
+elif echo "$filetype" | grep -q "PDF document"; then
+        echo "$filename ist eine PDF-Datei"
+        xpdf "$filename"
+
+else
+        echo "$filename ist ein unbekannter Typ"
+fi
+
+exit 0
+~      
+Aufgabe c:
+ffmpeg ist einen universellen Media-Konverter. 
+
+#!/bin/sh
+
+if [ "$#" -ne 1 ]; then
+        echo "Nur eine Datei darf als Argument übergegeben werden."
+        exit 1
+fi
+
+filename="$1"
+
+if [ ! -f "$filename" ] || echo "$filename" | grep -vq '\.wav$'; then
+        echo "Fehler: "$filename" existiert nicht oder endet nicht mit .wav"
+        exit 1
+fi
+
+mp3file="${1%.wav}.mp3"
+ffmpeg -i "$1" "$mp3file"
+
+if [ $? -ne 0 ]; then
+        echo "Fehler bei der Umwandlung"
+        exit 1
+fi
+
+exit 0
+
+
+Aufgabe d:
+
+IFS: steht für Internal Field Seperator und ist in der Shell wichtig, wenn wir Variablen wie 4PATH trennen wollen.
+PATH sieht so aus: /usr/local/bin:/usr/bin:/bin:/home/user/bin
+Die ":" trennen die einzelnen Verzeichnisse.    
+
+if [ "$#" -ne 1 ]; then
+        echo "Bitte nur ein Argument angeben"
+        exit 1
+fi
+
+kommando="$1"
+
+IFS=:
+
+for dir in $PATH; do
+        if [ -x "$dir/$kommando" ]; then
+                echo "$dir/$kommando"
+                exit 0
+        fi
+done
+
+exit 1
