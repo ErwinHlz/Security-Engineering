@@ -14,9 +14,16 @@ done
 exit 0
 
 
-
-
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
 Aufgabe b:
+Bei dieser Aufgabe soll ein Shell-Skript geschrieben werden, die zu einer angegeben Datei ihre Type sagt. Also Was für eine Art ist die Datei.
+
+
+
+
 
 #!/bin/sh
 if [ "$#" -eq 0 ]; then                                         //  Falls kein Argument gegeben ist
@@ -38,31 +45,35 @@ fi
 filetype="$(file "$filename")"                                  //filetype speichert String Information über filename
 
 if echo "$filetype" | grep -q "text"; then                      // falls filetype .txt hat, dann ist es eine Textdatei
-        echo "$filename ist eine Textdatei"
-        less "$filename"
+        echo "$filename ist eine Textdatei"                     //grep -q steht für (quiet: ), benutzt man um zu wissen, ob der angegebener String enthalten ist. 
+        less "$filename"                                        // less ist ein Text-Viewer, um Textdateien zu öffnen
 
-elif echo "$filetype" | grep -q "OpenDocument"; then            
+elif echo "$filetype" | grep -q "OpenDocument"; then            // falls OpenDocument, dann ist es Libreoffcie
         echo "$filename ist eine OpenDocument-Datei"
-        libreoffice "$filename"
+        libreoffice "$filename"                                 // Um Libreoffice dateien zu öffnen
 
-elif echo "$filetype" | grep -q "executable"; then
+elif echo "$filetype" | grep -q "executable"; then              // falls executable, dann ist es ausführbare Datei
         echo "$filename ist eine ausführbare Datei"
-        sh "$filename"
+        sh "$filename"                                          // sh --> Executable Dateien öffnen
 
-elif echo "$filetype" | grep -q "image"; then
+elif echo "$filetype" | grep -q "image"; then                   // falls image, dann ist es Bilddatei
         echo "$filename ist eine Bilddatei"
-        eog "$filename"
+        eog "$filename"                                         // EOG= Eye of Gnome --> öffnet Bilddateien in einfcahen Fenster
 
-elif echo "$filetype" | grep -q "PDF document"; then
+elif echo "$filetype" | grep -q "PDF document"; then            // falls PDF Document, dann ist es PDF Datei
         echo "$filename ist eine PDF-Datei"
-        xpdf "$filename"
+        xpdf "$filename"                                        // xpdf --> öffnet pdf dateien
 
 else
         echo "$filename ist ein unbekannter Typ"
 fi
 
 exit 0
-~      
+
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
 Aufgabe c:
 ffmpeg ist einen universellen Media-Konverter. 
 
@@ -75,10 +86,25 @@ fi
 
 filename="$1"
 
-if [ ! -f "$filename" ] || echo "$filename" | grep -vq '\.wav$'; then
+
+______________________________________________________________________________________________________________________________________________________
+//Falls der Dateiname nicht existiert --> Fehlermeldung
+//Falls die Datei nicht mit .wav endet --> Fehlermeldung
+// -f steht für "file exists and it a regular file"
+// grep -vq --> v steht für invert match. Zeigt Zeilen, die nicht zum Muster passen. q(Quiet) gibt nichts aus, liefert nur exit Codes. 
+______________________________________________________________________________________________________________________________________________________
+
+if [ ! -f "$filename" ] || echo "$filename" | grep -vq '\.wav$'; then           
         echo "Fehler: "$filename" existiert nicht oder endet nicht mit .wav"
         exit 1
 fi
+
+______________________________________________________________________________________________________________________________________________________
+// mp3file speichert 
+%.wav wird von unserem ersten Argument "$1" entfernt. Also Wenn wir ein Argument haben($1), und sie mit ".wav" endet, wird ".wav" durch ".mp3" ersetzt.
+ffmpeg benutzt man hier um die Audios zu konvertieren. "-i" steht für Input Datei. 
+Das heißt unser Argument, "$1", wird in einer "$mp3datei" umgewandelt.
+______________________________________________________________________________________________________________________________________________________
 
 mp3file="${1%.wav}.mp3"
 ffmpeg -i "$1" "$mp3file"
@@ -90,27 +116,41 @@ fi
 
 exit 0
 
-
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________
 Aufgabe d:
 
-IFS: steht für Internal Field Seperator und ist in der Shell wichtig, wenn wir Variablen wie 4PATH trennen wollen.
+IFS: steht für Internal Field Seperator und ist in der Shell wichtig, wenn wir Variablen wie PATH trennen wollen.
 PATH sieht so aus: /usr/local/bin:/usr/bin:/bin:/home/user/bin
 Die ":" trennen die einzelnen Verzeichnisse.    
+#!/bin/sh
 
-if [ "$#" -ne 1 ]; then
-        echo "Bitte nur ein Argument angeben"
-        exit 1
+if [ "$#" -lt 1 ]; then                             
+    echo "Bitte mindestens ein Argument angeben"
+    exit 1
 fi
 
-kommando="$1"
+IFS=:                                                   //Standardweise ist IFS ein Leerzeichen. Hier setzen wir den auf :
 
-IFS=:
+status=0                                                //Hier werden alle Ststaus-Codes gespeichert, also 0 wenn alle gefunden werden, 1 = mind 1 wurde nicht gefunden
 
-for dir in $PATH; do
-        if [ -x "$dir/$kommando" ]; then
-                echo "$dir/$kommando"
-                exit 0
+for kommando in "$@"; do                                //Für jedes übergebene Kommando
+    gefunden=0                                          //Hilfsvariable, mit der wir speichern, ob ein Kommondo gefunden wird oder nicht 
+    for dir in $PATH; do                                //hier laufen wir alle Verzeichnisse im PATH
+        if [ -x "$dir/$kommando" ]; then                //Wenn es ausführbare Kommandos gibt (-x), dann
+            echo "$kommando gefunden in: $dir/$kommando"
+            gefunden=1
+            break                                       //gefunden auf 1 setzten und aus der Schleife raus 
         fi
+    done
+    if [ "$gefunden" -eq 0 ]; then                      // wenn es nicht gefunden wird, dann Fehlermeldung uns exitcode 1
+
+        echo "$kommando wurde nicht im PATH gefunden"
+        status=1
+    fi
 done
 
-exit 1
+exit $status
+

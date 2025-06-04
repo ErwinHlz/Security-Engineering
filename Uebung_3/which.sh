@@ -1,19 +1,27 @@
 #!/bin/sh
 
-if [ "$#" -ne 1 ]; then
-	echo "Bitte nur ein Argument angeben"
-	exit 1
+if [ "$#" -lt 1 ]; then
+    echo "Bitte mindestens ein Argument angeben"
+    exit 1
 fi
-
-kommando="$1"
 
 IFS=:
 
-for dir in $PATH; do
-	if [ -x "$dir/$kommando" ]; then
-		echo "$dir/$kommando"
-		exit 0
-	fi
+status=0
+
+for kommando in "$@"; do
+    gefunden=0
+    for dir in $PATH; do
+        if [ -x "$dir/$kommando" ]; then
+            echo "$kommando gefunden in: $dir/$kommando"
+            gefunden=1
+            break
+        fi
+    done
+    if [ "$gefunden" -eq 0 ]; then
+        echo "$kommando wurde nicht im PATH gefunden"
+        status=1
+    fi
 done
 
-exit 1
+exit $status
