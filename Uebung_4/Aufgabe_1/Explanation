@@ -1,0 +1,8 @@
+Wir sollen ein Programm start.c schreiben.  Wir rufen unser Programm so:
+
+./start prog arg1 arg2 arg3 
+Dabei steht prog für unseres Kommando. arg1 arg2 sind die Argumente, die wir unseres Programm geben wollen. Also "./start ls -l /HTW"
+
+Ziel von dieser Aufgabe ist es, mit unserem C Programm ein Command als Kindprozess auszuführen.
+
+fork() Methode startet einen neuen Kinderprozess
