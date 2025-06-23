@@ -58,6 +58,7 @@ int main() {
         // Parameter: shmid, Adresse (NULL = vom System gewählt), Flags
         // Bibliothek: sys/shm.h
         shared_data = (int *)shmat(shmid, NULL, 0);
+
         if (shared_data == (void *)-1) {
             perror("shmat (child)");
             exit(1);
@@ -92,6 +93,13 @@ int main() {
             // Bibliothek: stdlib.h
             shared_data[i] = lrand48();
         }
+        printf("P1 hat %d Zufallszahlen generiert.\n", N_SHARED);
+        printf("erste 10 Zahlen:\n");
+        for (int i = 0; i < 10; ++i) {
+            printf("%d ", shared_data[i]);
+
+        }
+        printf("\n");
         shmdt(shared_data);
         // sem_post: Erhöht den Semaphor um 1 (Signal an wartende Prozesse).
         // Parameter: Zeiger auf sem_t
