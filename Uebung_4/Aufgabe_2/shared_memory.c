@@ -39,7 +39,7 @@ struct sembuf V(int semnum) {
 int main() {
     int shm_id;         // ID des Shared-Memory-Segments
     int sem_id;         // ID des Semaphor-Sets
-    int *shared_data;   // Zeiger auf den Shared-Memory-Bereich
+    int *shared_data;   // Zeiger auf den Shared-Memory-Bereich, shmat gibt zeiger auf den Anfang des Shared-Memory-Segments zurück
 
     // Schlüssel für Shared Memory und Semaphoren generieren
     key_t shm_key = ftok("shmfile", 1); // Shared-Memory-Key // ftok erzeugt einen eindeutigen Schlüssel basierend auf einer Datei und einem Projekt-ID
@@ -149,11 +149,11 @@ int main() {
                V-Operation: erhöht den Wert der Semaphore um 1, weckt wartende Prozesse auf
             */
             struct sembuf v1 = V(0);
-            semop(sem_id, &v1, 1);
+            semop(sem_id, &v1, 1); // semop erwartet einen Zeiger auf ein array, mit &v1 zeigt man sozusagen auf ein array mit einem element, eigentlich au die speicheradresse
         }
         printf("Anzahl der geschriebenen Daten: %d\n", written);
 
-        // Optional: Ausgabe der ersten 10 geschriebenen Daten
+
         printf("Ersten 10 Daten im Shared Memory:\n");
 
         for (int i = 0; i < 10 ; i++) {
