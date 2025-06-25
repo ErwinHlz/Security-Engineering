@@ -1,126 +1,227 @@
-#include <stdio.h>      // printf, perror
-#include <stdlib.h>     // exit
-#include <sys/ipc.h>    // IPC_PRIVATE, IPC_CREAT (Shared Memory, Interprozesskommunikation)
-#include <sys/shm.h>    // shmget, shmat, shmdt, shmctl (Shared Memory)
-#include <unistd.h>     // fork, getpid
-#include <time.h>       // time
-#include <sys/wait.h>   // wait
-#include <semaphore.h>  // sem_t, sem_init, sem_wait, sem_post, sem_destroy (POSIX-Semaphore)
-#include <sys/mman.h>   // mmap, munmap, PROT_READ, PROT_WRITE, MAP_SHARED, MAP_ANONYMOUS, MAP_FAILED
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
 
+#define N_DATA 2000000
 #define N_SHARED 2000
 
+/**
+ * Erzeugt eine P-Operation (wait) für eine Semaphore.
+ * @param semnum Index der Semaphore im Set, auf die gewartet werden soll.
+ * @return struct sembuf Struktur für semop(), die eine -1 Operation auf semnum beschreibt.
+ */
+struct sembuf P(int semnum) {
+    struct sembuf op = {semnum, -1, 0};
+    return op;
+}
+
+/**
+ * Erzeugt eine V-Operation (signal) für eine Semaphore.
+ * @param semnum Index der Semaphore im Set, die freigegeben werden soll.
+ * @return struct sembuf Struktur für semop(), die eine +1 Operation auf semnum beschreibt.
+        struct sembuf {
+            int sem_num; // Index der Semaphore im Set
+            short sem_op; // Operation: -1 für P (wait), +1 für V (signal)
+            short sem_flg; // Flags, hier 0 für Standardverhalten
+        };
+ */
+struct sembuf V(int semnum) {
+    struct sembuf op = {semnum, +1, 0};
+    return op;
+}
+
 int main() {
-    int shmid;
-    int *shared_data;
+    int shm_id;         // ID des Shared-Memory-Segments
+    int sem_id;         // ID des Semaphor-Sets
+    int *shared_data;   // Zeiger auf den Shared-Memory-Bereich
 
-    // mmap: Legt einen Bereich im Shared Memory an, um Semaphore zwischen Prozessen zu teilen.
-    // Parameter: Adresse (NULL = vom System gewählt), Größe, Zugriffsrechte, Flags, Dateideskriptor, Offset
-    // Bibliothek: sys/mman.h
-    sem_t *sem = mmap(NULL, sizeof(sem_t), PROT_READ | PROT_WRITE,
-                      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    if (sem == MAP_FAILED) {
-        // perror: Gibt eine Fehlermeldung für die letzte Systemfunktion aus.
-        // Bibliothek: stdio.h
-        perror("mmap");
-        // exit: Beendet das Programm mit Fehlercode.
-        // Bibliothek: stdlib.h
+    // Schlüssel für Shared Memory und Semaphoren generieren
+    key_t shm_key = ftok("shmfile", 1); // Shared-Memory-Key // ftok erzeugt einen eindeutigen Schlüssel basierend auf einer Datei und einem Projekt-ID
+    key_t sem_key = ftok("semfile", 2); // Semaphoren-Key
+    key_t shm_key2 = ftok("shfile", 3); // ungültiger schlüssel, um zu zeigen, dass ftok auch fehlschlagen kann
+
+    if (shm_key == -1 ) {
+        perror("shm_key error");
         exit(1);
-    }
-    // sem_init: Initialisiert einen POSIX-Semaphor.
-    // Parameter: Zeiger auf sem_t, pshared (1 = zwischen Prozessen), Startwert
-    // Bibliothek: semaphore.h
-    if (sem_init(sem, 1, 0) == -1) {
-        perror("sem_init");
+    } else if (sem_key == -1) {
+        perror("sem_key error");
         exit(1);
+    } else {
+        printf("Schlüssel für Shared Memory: %d, Schlüssel für Semaphoren: %d\n", shm_key, sem_key);
+
     }
 
-    // shmget: Erstellt oder öffnet ein Shared Memory Segment.
-    // Parameter: Schlüssel, Größe, Flags (z.B. Erstellen, Rechte)
-    // Bibliothek: sys/shm.h
-    shmid = shmget(IPC_PRIVATE, N_SHARED * sizeof(int), IPC_CREAT | 0666);
-    if (shmid < 0) {
+    // Shared Memory Segment anlegen
+    /* int shmget(key_t key, size_t size, int shmflg); key = Schlüssel, size = Größe in Bytes,
+       shmflg = Flags, hier zugriffsrechte=0666 (lesen und schreiben) | IPC_CREAT (erzeugt Segment, falls nicht vorhanden;
+        falls kein key vorhanden, wird hier trotzdem ein Segment erzeugt, ohne IPC_Creat würde es dann fehlschlagen)
+     */
+    shm_id = shmget(shm_key, N_SHARED * sizeof(int), 0666 | IPC_CREAT);
+    if (shm_id < 0) {
         perror("shmget");
         exit(1);
+    } else {
+        printf("Shared Memory Segment ID: %d\n", shm_id); // der Kernel gibt eine eindeutige ID für das Shared Memory Segment zurück, diese inkrementiert immer +1, nicht zurücksetzbar
+
     }
 
-    // fork: Erzeugt einen Kindprozess (Kopie des aktuellen Prozesses).
-    // Rückgabewert: 0 im Kindprozess, PID des Kindes im Elternprozess, -1 bei Fehler
-    // Bibliothek: unistd.h
-    pid_t pid = fork();
+    /* Zwei Semaphoren anlegen: S1 (Lesen), S2 (Schreiben)
+         int semget(key_t key, int nsems, int semflg); key = Schlüssel, nsems = Anzahl der Semaphoren im Set,
+         semflg = Flags, hier zugriffsrechte=0666 (lesen und schreiben) | IPC_CREAT (erzeugt Set, falls nicht vorhanden)
+     */
+    sem_id = semget(sem_key, 2, 0666 | IPC_CREAT);
+    if (sem_id < 0) {
+        perror("semget");
+        exit(1);
+    } else {
+        printf("Semaphoren Set ID: %d\n", sem_id); // der Kernel gibt eine eindeutige ID für das Semaphoren Set zurück
+
+    }
+
+    // Initialwerte der Semaphoren setzen
+    /* int semctl(int semid, int semnum, int cmd, ...); semid = ID des Semaphoren-Sets, semnum = Index der Semaphore im Set,
+       cmd = Kommando, hier SETVAL (setzt den Wert der Semaphore), ... = optionaler Wert (hier 0 für S1 und 1 für S2;
+        0 bedeutet, dass S1 initial blockiert ist, S2 initial nicht blockiert ist, 1 freier platz)
+     */
+    semctl(sem_id, 0, SETVAL, 0);
+    semctl(sem_id, 1, SETVAL, 1);
+
+    // Zufallsdaten erzeugen
+    srand48(time(NULL));
+    int data[N_DATA];
+    for (int i = 0; i < N_DATA; i++) {
+        data[i] = lrand48();
+    }
+    printf("Erzeugte Zufallsdaten(ersten 10):\n");
+    for (int i = 0; i < 10; i++) {
+        printf("%d ", data[i]); // Ausgabe der ersten 10 Zufallszahlen
+    }
+    printf("\n");
+
+
+    pid_t pid = fork(); // Kindprozess erzeugen;
+
+    // pid < 0 bedeutet, dass der Fork fehlgeschlagen ist
     if (pid < 0) {
         perror("fork");
         exit(1);
     }
 
-    if (pid == 0) {
-        // shmat: Bindet das Shared Memory Segment in den Adressraum ein.
-        // Parameter: shmid, Adresse (NULL = vom System gewählt), Flags
-        // Bibliothek: sys/shm.h
-        shared_data = (int *)shmat(shmid, NULL, 0);
-
+    // pid > 0 bedeutet, dass wir im Elternprozess sind (Erzeugerprozess)
+    if (pid > 0) {
+        /**
+         * Überträgt die Daten in Blöcken von N_SHARED in den Shared Memory.
+         * Synchronisiert mit dem Verbraucherprozess über Semaphoren.
+         * (int *)shmat(int shmid, const void *shmaddr, int shmflg);
+            * shmid = ID des Shared-Memory-Segments, shmaddr = Adresse, an die das Segment angehängt werden soll (NULL = beliebige Adresse),
+            * shmflg = Flags (0 = Standardverhalten, d.h. Lese- und Schreibzugriff)
+         */
+        shared_data = (int *)shmat(shm_id, NULL, 0);
         if (shared_data == (void *)-1) {
-            perror("shmat (child)");
+            perror("shmat producer");
             exit(1);
         }
-        printf("P2 wartet auf die Daten vom Vaterprozess...\n");
-        // sem_wait: Wartet, bis der Semaphor > 0 ist, dekrementiert ihn dann.
-        // Parameter: Zeiger auf sem_t
-        // Bibliothek: semaphore.h
-        sem_wait(sem);
-        printf("P2 liest die ersten 10 Werte:\n");
-        for (int i = 0; i < 10; ++i) {
-            printf("%d ", shared_data[i]);
+
+        int written = 0; // Anzahl der bereits geschriebenen Daten
+        while (written < N_DATA) {
+            // Warte auf Freigabe zum Schreiben (S2)
+            struct sembuf p2 = P(1);
+            /* int semop(int semid, struct sembuf *sops, size_t nsops);
+                * semid = ID des Semaphoren-Sets, sops = zeiger auf Array von semop-Operationen, nsops = Anzahl der Operationen
+                * Diese Funktion blockiert, bis die Semaphore verfügbar ist (d.h. der Wert > 0 ist)
+             */
+            semop(sem_id, &p2, 1);
+
+            int count = (N_DATA - written > N_SHARED) ? N_SHARED : (N_DATA - written);
+            for (int i = 0; i < count; i++) {
+                shared_data[i] = data[written + i];
+            }
+            written += count;
+
+            // Lesefreigabe setzen (S1)
+            /* P-Operation: verringert den Wert der Semaphore um 1, blockiert, wenn der Wert <= 0 ist
+               V-Operation: erhöht den Wert der Semaphore um 1, weckt wartende Prozesse auf
+            */
+            struct sembuf v1 = V(0);
+            semop(sem_id, &v1, 1);
         }
-        printf("\n");
-        // shmdt: Löst das Shared Memory Segment vom Adressraum.
-        // Parameter: Zeiger auf das Segment
-        // Bibliothek: sys/shm.h
-        shmdt(shared_data);
-        exit(0);
-    } else {
-        shared_data = (int *)shmat(shmid, NULL, 0);
-        if (shared_data == (void *)-1) {
-            perror("shmat (parent)");
-            exit(1);
-        }
-        // srand48: Initialisiert den Zufallszahlengenerator.
-        // Parameter: Startwert (z.B. time(NULL))
-        // Bibliothek: stdlib.h
-        srand48(time(NULL));
-        for (int i = 0; i < N_SHARED; ++i) {
-            // lrand48: Gibt eine nicht-negative Zufallszahl zurück.
-            // Bibliothek: stdlib.h
-            shared_data[i] = lrand48();
-        }
-        printf("P1 hat %d Zufallszahlen generiert.\n", N_SHARED);
-        printf("erste 10 Zahlen:\n");
-        for (int i = 0; i < 10; ++i) {
+        printf("Anzahl der geschriebenen Daten: %d\n", written);
+
+        // Optional: Ausgabe der ersten 10 geschriebenen Daten
+        printf("Ersten 10 Daten im Shared Memory:\n");
+
+        for (int i = 0; i < 10 ; i++) {
             printf("%d ", shared_data[i]);
 
         }
-        printf("\n");
-        shmdt(shared_data);
-        // sem_post: Erhöht den Semaphor um 1 (Signal an wartende Prozesse).
-        // Parameter: Zeiger auf sem_t
-        // Bibliothek: semaphore.h
-        sem_post(sem);
-        // wait: Wartet auf die Beendigung eines Kindprozesses.
-        // Parameter: Zeiger auf Status (NULL = ignorieren)
-        // Bibliothek: sys/wait.h
+
+        // Warten auf Kindprozess
         wait(NULL);
-        // shmctl: Führt Steueroperationen auf Shared Memory Segmenten aus (z.B. löschen).
-        // Parameter: shmid, Befehl (z.B. IPC_RMID), optionales Argument
-        // Bibliothek: sys/shm.h
-        shmctl(shmid, IPC_RMID, NULL);
-        // sem_destroy: Zerstört einen POSIX-Semaphor.
-        // Parameter: Zeiger auf sem_t
-        // Bibliothek: semaphore.h
-        sem_destroy(sem);
-        // munmap: Gibt einen mit mmap belegten Speicherbereich frei.
-        // Parameter: Adresse, Größe
-        // Bibliothek: sys/mman.h
-        munmap(sem, sizeof(sem_t));
+
+        // Ressourcen freigeben
+        // shmdt: trennt den Shared Memory vom Adressraum des Prozesses
+        shmdt(shared_data);
+        // shmctl: löscht das Shared Memory Segment und gibt die Ressourcen frei
+        shmctl(shm_id, IPC_RMID, NULL);
+        // semctl: löscht das Semaphoren-Set
+        semctl(sem_id, 0, IPC_RMID);
+        printf("\n");
+
+        printf("Erzeuger: Fertig.\n");
+
     }
+
+    // pid == 0 bedeutet, dass wir im Kindprozess sind (Verbraucherprozess)
+    else if (pid == 0) {
+        /**
+         * Liest die Daten blockweise aus dem Shared Memory.
+         * Synchronisiert mit dem Erzeugerprozess über Semaphoren.
+         */
+        shared_data = (int *)shmat(shm_id, NULL, 0);
+        if (shared_data == (void *)-1) {
+            perror("shmat consumer");
+            exit(1);
+        }
+
+        int received = 0; // Anzahl der bereits gelesenen Daten
+        while (received < N_DATA) {
+            // Warte auf Lesefreigabe (S1)
+            struct sembuf p1 = P(0);
+            semop(sem_id, &p1, 1);
+
+            int count = (N_DATA - received > N_SHARED) ? N_SHARED : (N_DATA - received);
+            for (int i = 0; i < count; i++) {
+                int val = shared_data[i];
+
+            }
+            received += count;
+
+            // Schreibfreigabe setzen (S2)
+            struct sembuf v2 = V(1);
+            semop(sem_id, &v2, 1);
+        }
+        printf("Anzahl der gelesenen Daten: %d\n", received);
+
+        // Optional: Ausgabe der ersten 10 gelesenen Daten
+        printf("Ersten 10 Daten gelesen vom Shared Memory:\n");
+
+        for (int i = 0; i < 10; i++) {
+            printf("%d ", shared_data[i]);
+
+        }
+
+        shmdt(shared_data);
+        printf("\n");
+
+        printf("Verbraucher: Fertig.\n");
+
+    }
+
     return 0;
 }
