@@ -3,7 +3,10 @@
 # Signal-Handler definieren
 trap 'echo "→ CPU-Time Limit überschritten. Prozess wird beendet."; exit 1' SIGXCPU
 trap 'echo "→ File-Size Limit überschritten. Prozess wird beendet."; exit 1' SIGXFSZ
-trap 'echo "→ Segmentation Fault oder Stack Overflow. Prozess wird beendet."; exit 1' SIGSEGV
+trap 'echo "→ Segmentation Fault oder Stack Overflow. Prozess wird beendet."; exit 1' 11
+
+# traps funktionieren hier nicht, da der kernel immer greift, um das programm zu beenden und
+# deshalb kann er zu dem zeitpunkt keinen code mehr ausführen.
 
 echo "====== Limit-Test-Programm ======"
 
@@ -19,32 +22,58 @@ case "$WAHL" in
     1)
         echo ""
         echo "→ CPU-Limit-Test wird gestartet..."
-        ulimit -t 1
-        echo "CPU-Time Limit gesetzt auf 1 Sekunde."
+
         # Endlosschleife, um CPU zu fressen
-        while :; do :; done
+        ./cpu_kill.sh
+        EXITCODE=$?
+
+
+                if [ $EXITCODE -eq 152 ]; then
+                  echo "→ CPU-Zeit-Limit überschritten! (SIGXCPU)"
+                fi
+                if [ $EXITCODE -eq 137 ]; then
+                  echo "Programm wurde durch SIGKILL beendet."
+                fi
+
+
         ;;
     2)
         echo ""
         echo "→ Stack-Limit-Test wird gestartet..."
-        ulimit -s 512
-        echo "Stack Size Limit gesetzt auf 512 KB."
 
         # Funktion ruft sich endlos selbst auf:
-        recursive() {
-            recursive
-        }
-        recursive
+        ./stack_kill.sh
+        EXITCODE=$?
+
+        if [ $EXITCODE -eq 139 ]; then
+          echo "→ Stack Overflow erkannt! (SIGSEGV)"
+        fi
+
+
+        # Funktion ruft sich endlos selbst auf:
+
         ;;
     3)
         echo ""
         echo "→ File-Size-Limit-Test wird gestartet..."
-        ulimit -f 1
-        echo "File Size Limit gesetzt auf 1 Block = 512 Bytes."
+        trap 'echo ">>> Datei zu groß (SIGXFSZ)!"' SIGXFSZ
 
-        echo "→ Versuche, 10 KB in eine Datei zu schreiben..."
-        dd if=/dev/zero of=testfile bs=1k count=10
-        echo "→ Datei wurde geschrieben (sollte eigentlich fehlschlagen)."
+        ulimit -f 1
+
+        # Bash-intern schreiben:
+        cat ./hiiipower.txt > testfile
+        EXITCODE=$?
+
+        echo "$EXITCODE"
+
+        if [ $EXITCODE -eq 153 ]; then
+
+
+            echo "Dateigrößen-Limit überschritten (SIGXFSZ) erkannt!"
+
+        fi
+
+
         ;;
     0)
         echo "→ Programm beendet."
