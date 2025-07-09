@@ -85,3 +85,12 @@ case "$WAHL" in
 esac
 
 echo "Programm fertig."
+
+# in Bash simuliert:
+# 418  trap 'echo "SIGXFSZ ausgelöst, datei limit überschritten"' SIGXFSZ
+#  419  kill -SIGXFSZ $$  -> SIGXFSZ ausgelöst, datei limit überschritten
+#  420  ulimit -f 1
+#  421  cat hiiipower.txt > testfile.txt -> File size limit exceeded (core dumped)
+#  422  kill -SIGXFSZ $$ -> SIGXFSZ ausgelöst, datei limit überschritten
+#  423  history
+# äquivalent zu andren Befehlen, da kernel immer greift, um das Programm zu beenden
