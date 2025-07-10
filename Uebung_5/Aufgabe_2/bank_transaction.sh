@@ -6,7 +6,7 @@ trap '' INT
 echo "BANK TRANSACTION SYSTEM STARTED"
 
 while true; do
-    echo -n "Username: "
+    echo -n "Username: " # -n verhindert Zeilenumbruch
     read USERNAME
 
     if [ "$USERNAME" == "exit" ]; then
@@ -19,7 +19,7 @@ while true; do
 
     TAN_FILE="TAN/$USERNAME"
 
-    if [ ! -f "$TAN_FILE" ]; then
+    if [ ! -f "$TAN_FILE" ]; then # -f prüft, ob die Datei existiert und eine reguläre Datei ist
         echo "keine TAN-Liste für $USERNAME gefunden."
         continue
     fi
@@ -41,7 +41,7 @@ while true; do
         echo "Zugriff erlaubt!"
 
         # TAN verbrauchen → erste Zeile entfernen
-        tail -n +2 "$TAN_FILE" > "$TAN_FILE"
+        tail -n +2 "$TAN_FILE" > "$TAN_FILE.tmp" && mv "$TAN_FILE.tmp" "$TAN_FILE"
 
 
 

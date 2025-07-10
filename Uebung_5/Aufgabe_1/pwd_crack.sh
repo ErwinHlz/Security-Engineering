@@ -34,7 +34,8 @@ while IFS= read -r user_entry; do
     # Durchlaufe alle Wörter im Wörterbuch
     while IFS= read -r word; do
         # Hash generieren
-        HASH=$(openssl passwd -1 -salt "$SALT" "$word" | cut -d'$' -f4)
+        HASH=$(openssl passwd -1 -salt "$SALT" "$word" | cut -d'$' -f4) # OpenSSL Befehl zum Hashen des Passworts
+        # -1 steht für MD5-Hash, $SALT ist der Salt-Wert, und $word ist das zu hashende Passwort
 
         if [ "$HASH" == "$TARGET_HASH" ]; then
             echo "[+] Password found for $USERNAME: $word"
@@ -45,6 +46,6 @@ while IFS= read -r user_entry; do
 
     if [ $FOUND -eq 0 ]; then
         echo "[-] No password found for $USERNAME"
-    fi
+        fi
 
 done <<< "$USERS"

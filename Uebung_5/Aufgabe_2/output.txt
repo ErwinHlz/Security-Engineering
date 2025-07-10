@@ -1,0 +1,38 @@
+Cracking password for Steffi.Jones ...
+Username: Steffi.Jones
+Salt: O7v0C21Z
+Target Hash: 2FH7ib2Dxtoq6B83qTgON1
+[+] Password found for Steffi.Jones: yacht
+Cracking password for Marco.Reus ...
+Username: Marco.Reus
+Salt: Jebn3vQ5
+Target Hash: 2k..iqxtXNwfsCFAamWCS0
+[+] Password found for Marco.Reus: unsecure
+Cracking password for Almuth.Schult ...
+Username: Almuth.Schult
+Salt: 0ngrMRa1
+Target Hash: uXLzWhnrYzmiRM3fi8Nde1
+[+] Password found for Almuth.Schult: wintering
+Cracking password for Manuel.Neuer ...
+Username: Manuel.Neuer
+Salt: 1aaPttrp
+Target Hash: VoF2rkOyC/tE.DxzQuuIY1
+[+] Password found for Manuel.Neuer: pyramid
+Cracking password for Birgit.Prinz ...
+Username: Birgit.Prinz
+Salt: 7ieEwjFr
+Target Hash: T/jwatbzqhLZNVDEfymB41
+[+] Password found for Birgit.Prinz: flyer
+
+
+openssl passwd -1 -salt 7ieEwjFr flyer
+$1$7ieEwjFr$T/jwatbzqhLZNVDEfymB41
+
+openssl passwd -1 -salt O7v0C21Z yacht
+$1$O7v0C21Z$2FH7ib2Dxtoq6B83qTgON1
+
+openssl passwd -1 -salt Jebn3vQ5 unsecure
+$1$Jebn3vQ5$2k..iqxtXNwfsCFAamWCS0
+
+openssl passwd -1 -salt 0ngrMRa1 wintering
+$1$0ngrMRa1$uXLzWhnrYzmiRM3fi8Nde1
